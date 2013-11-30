@@ -13,6 +13,8 @@ ruby menu.rb
 # 利用言語およびライブラリ 
 * ruby 1.8.7
 * nokogiri (1.4.4)
+* rspec(2.14.1)
+* mocha(0.14.0)
 
 # Special thanks
 * [たまごや](http://www.tamagoya.co.jp/)
