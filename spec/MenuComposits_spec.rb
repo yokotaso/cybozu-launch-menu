@@ -1,8 +1,7 @@
 require "mocha/api"
 require "cybozu/launch/menu/composition/MenuComposits.rb"
 require "cybozu/launch/menu/service/PrintService.rb"
-include MenuCompositions
-describe MenuCompositions do
+describe "Composits of menu items" do
   NAME = "name of item"
   before(:all) { 
     @printService = PrintService.new() 
@@ -11,6 +10,7 @@ describe MenuCompositions do
           .expects(:printIndentLevel2).never()
     end
   }
+
   after(:all)  { @printService = nil }
 
   describe Item do
@@ -44,6 +44,7 @@ describe MenuCompositions do
         itemList = ItemList.new(NAME)
         @printService.expects(:printIndentLevel1).once().with(NAME)
         @printService.expects(:printIndentLevel2).once().with(menuName)
+        @printService.expects(:printEndOfLine).once()
         item = Item.new(menuName)
         itemList.add(item)
         itemList.print @printService
@@ -55,29 +56,32 @@ describe MenuCompositions do
     menuName = "name of menu"
     describe "mainMenu" do
       it "should return ItemList of Main Menu" do
-        menu = mainMenu(Item.new(menuName))
-        @printService.expects(:printIndentLevel1).once().with(Title::MAIN_MENU)
+        menu = MenuItemFactory.mainMenu(menuName)
+        @printService.expects(:printIndentLevel1).once().with(MenuItemFactory::Title::MAIN_MENU)
         @printService.expects(:printIndentLevel2).once().with(menuName)
+        @printService.expects(:printEndOfLine).once()
         menu.print @printService
       end
     end
 
     describe "subMenu" do
       it "should return ItemList of Sub Menu" do
-        menu = subMenu()
-        subMenu.add(Item.new("1")).add(Item.new("2"))
-        @printService.expects(:printIndentLevel1).once().with(Title::SUB_MENU)
+        menu = MenuItemFactory.subMenu()
+        menu.add(Item.new("1")).add(Item.new("2"))
+        @printService.expects(:printIndentLevel1).once().with(MenuItemFactory::Title::SUB_MENU)
         @printService.expects(:printIndentLevel2).twice()
-        subMenu.print @printService
+        @printService.expects(:printEndOfLine).once()
+        menu.print @printService
       end
     end
 
     describe "nutorition" do
       it "should returm ItemList of Nutorition" do
         calories = "XXX kcal"
-        nutorition = nutorition(Item.new(calories))
-        @printService.expects(:printIndentLevel1).once().with(Title::NUTORITION)
-        @printService.expects(:printIndentLevel2).once().with(calories)
+        nutorition = MenuItemFactory.nutorition(calories)
+        @printService.expects(:printIndentLevel1).once().with(MenuItemFactory::Title::NUTORITION)
+        @printService.expects(:printIndentLevel2).twice()
+        @printService.expects(:printEndOfLine).once()
         nutorition.print @printService
       end
     end
