@@ -3,7 +3,7 @@ require "cybozu/launch/menu/composition/MenuComposits.rb"
 require "cybozu/launch/menu/service/PrintService.rb"
 describe "Composits of menu items" do
   NAME = "name of item"
-  before(:all) { 
+  before(:each) { 
     @printService = PrintService.new() 
     def @printService.expectNeverInquired
       self.expects(:printIndentLevel1).never()\
@@ -11,7 +11,7 @@ describe "Composits of menu items" do
     end
   }
 
-  after(:all)  { @printService = nil }
+  after(:each)  { @printService = nil }
 
   describe Item do
     it "should iquire PrintService to print name" do
