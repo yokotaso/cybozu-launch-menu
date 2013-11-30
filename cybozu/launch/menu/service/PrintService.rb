@@ -6,14 +6,18 @@
 class PrintService
   
   def printTopLevel(string)
-    puts string
+    print string , "\n"
   end
   
   def printIndentLevel1(string)
-    puts " " , string
+    print " " , string , "\n"
   end
 
   def printIndentLevel2(string)
-    puts "  ", string
+    print "  ", string , "\n"
+  end
+
+  def printEndOfLine()
+    print "\n"
   end
 end
