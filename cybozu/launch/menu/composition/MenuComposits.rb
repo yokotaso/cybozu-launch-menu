@@ -1,61 +1,68 @@
-class Menu
-  def initialize(menuName)
-    @menuName = menuName
+module MenuCompositions
+  module Title
+    MAIN_MENU  = "■Main Menu"
+    SUB_MENU   = "■Sub Menu"
+    NUTORITION = "■Nutorition"
   end
 
-  def print(printService)
-    printService.printIndentLevel2 @menuName
-  end
-end
-# Null Object
-class NotPrintable
-  def print(printService)
-    return
-  end
-end
-
-class MainMenu
-  def initialize(menu)
-    @menu = menu
-  end
-
-  def print(printService)
-    printServie.print "■MAIN MENU"
-    menu.print printService
-  end
-end
-
-class SubMenu
-  def initialize()
-    @menuList = []
-  end
+  # Class for Node 
+  class Item
+    def initialize(menuName)
+      @menuName = menuName
+    end
   
-  def addMenu(menu)
-    @menuList << menu
-    self
+    def print(printService)
+      printService.printIndentLevel2 @menuName
+    end
   end
 
-  def print(printService)
-    if @menuList.empty? then
+  # Null Object
+  class NotPrintable
+    def print(printService)
       return
     end
-    printService.printIndentLevel1  "■SUB  MENU"
-    @menuList.each do |menu|
-     menu.print printService 
+  end
+  
+  # Class for Composit structure
+  class ItemList 
+    def initialize(title)
+      @title = title
+      @itemList = []
+    end
+    
+    def add(item)
+      @itemList << item 
+      self
+    end
+  
+    def print(printService)
+      if @itemList.empty? then
+        return
+      end
+
+      printService.printIndentLevel1  @title
+      @itemList.each { |item| item.print printService }
     end
   end
-end
 
-class Nutorition
   CALORIE_OF_RICE = "ライス 340kcal"
-  def initialize(nutorition) 
-    @nutorition = nutorition
+  # factory method for nutotirion 
+  def nutorition(item)
+    itemList = ItemList.new(Title::NUTORITION)
+    itemList.add(Item.new(CALORIE_OF_RICE))
+    itemList.add(item)
+    itemList
   end
-
-  def print(printService)
-    printService.printIndentLevel1 "■NUTORITION"
-    printService.printIndentLevel2 CALORIE_OF_RICE
-    printService.printIndentLevel2 @nutorition
+  
+  # factory method for main menu
+  def mainMenu(menu)
+    itemList = ItemList.new(Title::MAIN_MENU)
+    itemList.add(menu) 
+  end
+  
+  # factory method for sub menu
+  def subMenu()
+    itemList = ItemList.new(Title::SUB_MENU)
+    itemList
   end
 end
-

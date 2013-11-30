@@ -5,15 +5,15 @@
 # printIndentLevel2 => インデントレベル2
 class PrintService
   
-  def self.printTopLevel(string)
+  def printTopLevel(string)
     puts string
   end
   
-  def self.printIndentLevel1(string)
+  def printIndentLevel1(string)
     puts " " , string
   end
 
-  def self.printIndentLevel2(string)
+  def printIndentLevel2(string)
     puts "  ", string
   end
 end
