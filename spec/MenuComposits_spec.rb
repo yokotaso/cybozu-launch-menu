@@ -1,91 +1,85 @@
 require "mocha/api"
 require "cybozu/launch/menu/composition/MenuComposits.rb"
 require "cybozu/launch/menu/service/PrintService.rb"
-describe Menu do
-  describe "when printout menu"
-    before do
-      @menuName = "Some Menu"
-      @menu = Menu.new(@menuName) 
-      @printService = PrintService.new()
-    end
-
-    it "should iquire PrintService to print manu name" do
-      @printService.expects(:printIndentLevel2).once().with(@menuName)
-      @menu.print @printService
-    end
-
-    after do
-      @menu = nil
-      @meNuName = nil 
-      @printService = nil
-    end
-end
-
-describe NotPrintable do
-  before do
-    @notPrintable = NotPrintable.new()
-    @printService = PrintService.new()
-  end
-
-  it "should never iquire PrintService" do
-    @printService.expects(:printIndentLevel1).never()\
-                 .expects(:printIndentLevel2).never()
-
-    @notPrintable.print @printService
-  end
-end
-
-describe MainMenu do
-  before do
-    @meinMenu = MainMenu.new(Menu.new("MainMenu"))
-    @printService = PrintService.new()
-  end
-
-  it "should inquire PrintService to print title, name of main menu" do
-    @printService.expects(:printIndentLevel1).once()
-    @printService.expects(:printIndentLevel2).once()
-  end
-end
-
-describe SubMenu do
-  before(:all) do
-    @subMenu = SubMenu.new()
-    @printService = PrintService.new()
-  end
-
-  describe "when sub menu is empty" do
-    it "should never iquire PrintService" do
-      @printService.expects(:printIndentLevel1).never()
-      @printService.expects(:printIndentLevel2).never()
-      @subMenu.print @printService
-    end
-  end
- 
-  describe "when there are some of sub menu" do
-    it "should iquire PrintService to print title, name of sub menus" do
-      @subMenu.addMenu(Menu.new("subMenu1"))\
-              .addMenu(Menu.new("subMenu2"))
-      @printService.expects(:printIndentLevel1).once()
-      @printService.expects(:printIndentLevel2).twice()
-      @subMenu.print @printService
-    end
-  end
-
-  after(:all) do
-    @subMenu = nil
-    @printService = nil
-  end
-end
-
-describe Nutorition do
-  before do
-    @nutorition = Nutorition.new("elements of nutorition")
+include MenuCompositions
+describe MenuCompositions do
+  NAME = "name of item"
+  before(:all) { 
     @printService = PrintService.new() 
+    def @printService.expectNeverInquired
+      self.expects(:printIndentLevel1).never()\
+          .expects(:printIndentLevel2).never()
+    end
+  }
+  after(:all)  { @printService = nil }
+
+  describe Item do
+    it "should iquire PrintService to print name" do
+      item = Item.new(NAME)
+      @printService.expects(:printIndentLevel2).once().with(NAME)
+      item.print @printService
+    end
+  end
+  
+  describe NotPrintable do
+    it "should never iquire PrintService" do
+      @printService.expectNeverInquired()
+      notPrintable = NotPrintable.new()
+      notPrintable.print @printService
+    end
   end
 
-  it "should inquire PrintService to print title,calorie of rice, nutorition of dishes" do
-    @printService.expects(:printIndentLevel1).once()
-    @printService.expects(:printIndentLevel2).twice()
-    @nutorition.print @printService
+  describe ItemList do
+    describe "when there are no items in ItemList" do
+      it "should never iquire PrintService" do
+        @printService.expectNeverInquired()
+        itemList = ItemList.new(NAME)
+        itemList.print @printService
+      end
+    end
+
+    describe "when there are some of items in ItemList" do
+      it "should iquire PrintService to print title, menu name" do
+        menuName = "Menu"
+        itemList = ItemList.new(NAME)
+        @printService.expects(:printIndentLevel1).once().with(NAME)
+        @printService.expects(:printIndentLevel2).once().with(menuName)
+        item = Item.new(menuName)
+        itemList.add(item)
+        itemList.print @printService
+      end
+    end
+  end
+
+  describe "factory methods" do
+    menuName = "name of menu"
+    describe "mainMenu" do
+      it "should return ItemList of Main Menu" do
+        menu = mainMenu(Item.new(menuName))
+        @printService.expects(:printIndentLevel1).once().with(Title::MAIN_MENU)
+        @printService.expects(:printIndentLevel2).once().with(menuName)
+        menu.print @printService
+      end
+    end
+
+    describe "subMenu" do
+      it "should return ItemList of Sub Menu" do
+        menu = subMenu()
+        subMenu.add(Item.new("1")).add(Item.new("2"))
+        @printService.expects(:printIndentLevel1).once().with(Title::SUB_MENU)
+        @printService.expects(:printIndentLevel2).twice()
+        subMenu.print @printService
+      end
+    end
+
+    describe "nutorition" do
+      it "should returm ItemList of Nutorition" do
+        calories = "XXX kcal"
+        nutorition = nutorition(Item.new(calories))
+        @printService.expects(:printIndentLevel1).once().with(Title::NUTORITION)
+        @printService.expects(:printIndentLevel2).once().with(calories)
+        nutorition.print @printService
+      end
+    end
   end
 end
