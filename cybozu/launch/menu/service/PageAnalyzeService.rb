@@ -28,12 +28,12 @@ class SaganoPageAnalyzeService
     end
 
     parentElement = @document.css('div.inner')
-    if parentElement == nil then
+    if parentElement.empty? then
       raiseError("div.inner")
     end
 
     menuDocument = parentElement.css(elementName)
-    if menuDocument == nil then
+    if menuDocument.empty? then
       raiseError(elementName)
     end
 

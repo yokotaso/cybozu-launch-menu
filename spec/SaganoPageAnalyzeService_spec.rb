@@ -34,4 +34,42 @@ describe SaganoPageAnalyzeService do
       menus.each{ |menu| menu.print @printService }
     end
   end
+
+  describe "when fail to analyze document" do
+    it "should raise error when document is null" do
+      service = SaganoPageAnalyzeService.new(nil)
+      expect {
+       service.getMainMenu 
+      }.to raise_error(MenuNotFoundException)
+    end
+
+    it "should raise error when parent element of menu is not found" do
+      @document.css("div.inner").remove()
+      service = SaganoPageAnalyzeService.new(@document)
+      expect {
+        service.getMainMenu
+      }.to raise_error(MenuNotFoundException)
+
+      expect {
+        service.getSubMenu
+      }.to raise_error(MenuNotFoundException)
+    end
+
+    it "should raise error when main menu element is not found" do
+      @document.css("div.inner").css("p").remove
+      service = SaganoPageAnalyzeService.new(@document)
+      expect {
+        service.getMainMenu
+      }.to raise_error(MenuNotFoundException)
+    end
+
+    it "should raise error when sub menu element is not found" do
+      @document.css("div.inner").css("li").remove
+      service = SaganoPageAnalyzeService.new(@document)
+      expect {
+        service.getSubMenu
+      }.to raise_error(MenuNotFoundException)
+    end
+  end
+
 end
