@@ -1,7 +1,7 @@
 require "mocha/api"
 require "cybozu/launch/menu/interface/TamagoyaMenu.rb"
 require "cybozu/launch/menu/interface/SaganoMenu.rb"
-require "cybozu/launch/menu/composition/MenuComposits.rb"
+require "cybozu/launch/menu/composits/MenuComposits.rb"
 require "cybozu/launch/menu/service/PrintService.rb"
 
 describe "MenuInterface" do
@@ -10,7 +10,7 @@ describe "MenuInterface" do
     def @printService.expectTopLevelPrintOf(title)
       self.expects(:printTopLevel).once().with(title)
     end
-    @mainMenu = MenuItemFactory.mainMenu("MainMenuName")
+    @mainMenu = MenuItemFactory.mainMenu().add(Item.new("mainMenu"))
     @mainMenu.expects(:print).once().with(@printService)
     @subMenu  = MenuItemFactory.subMenu().add(Item.new("SubMenuName"))
     @subMenu.expects(:print).once().with(@printService)

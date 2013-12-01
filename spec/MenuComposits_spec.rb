@@ -1,15 +1,8 @@
-require "mocha/api"
-require "cybozu/launch/menu/composition/MenuComposits.rb"
+require "cybozu/launch/menu/composits/MenuComposits.rb"
 require "cybozu/launch/menu/service/PrintService.rb"
 describe "Composits of menu items" do
   NAME = "name of item"
-  before(:each) { 
-    @printService = PrintService.new() 
-    def @printService.expectNeverInquired
-      self.expects(:printIndentLevel1).never()\
-          .expects(:printIndentLevel2).never()
-    end
-  }
+  before(:each) { @printService = PrintService.new() }
 
   after(:each)  { @printService = nil }
 
@@ -23,7 +16,9 @@ describe "Composits of menu items" do
   
   describe NotPrintable do
     it "should never iquire PrintService" do
-      @printService.expectNeverInquired()
+      @printService.expects(:printIndentLevel1).never()
+      @printService.expects(:printIndentLevel2).never()
+
       notPrintable = NotPrintable.new()
       notPrintable.print @printService
     end
@@ -31,10 +26,11 @@ describe "Composits of menu items" do
 
   describe ItemList do
     describe "when there are no items in ItemList" do
-      it "should never iquire PrintService" do
-        @printService.expectNeverInquired()
+      it "should raise MenuNotFoundException" do
         itemList = ItemList.new(NAME)
-        itemList.print @printService
+        proc {
+          itemList.print @printService
+        }.should raise_error( MenuNotFoundException )
       end
     end
 
@@ -56,7 +52,8 @@ describe "Composits of menu items" do
     menuName = "name of menu"
     describe "mainMenu" do
       it "should return ItemList of Main Menu" do
-        menu = MenuItemFactory.mainMenu(menuName)
+        menu = MenuItemFactory.mainMenu()
+        menu.add(Item.new(menuName))
         @printService.expects(:printIndentLevel1).once().with(MenuItemFactory::Title::MAIN_MENU)
         @printService.expects(:printIndentLevel2).once().with(menuName)
         @printService.expects(:printEndOfLine).once()
