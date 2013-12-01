@@ -1,3 +1,4 @@
+require "cybozu/launch/menu/exception/MenuNotFoundException.rb"
 module MenuItemFactory 
   module Title
     MAIN_MENU  = "■Main Menu"
@@ -15,15 +16,13 @@ module MenuItemFactory
   end
   
   # factory method for main menu
-  def self.mainMenu(menuName)
-    itemList = ItemList.new(Title::MAIN_MENU)
-    itemList.add(Item.new(menuName)) 
+  def self.mainMenu()
+    return ItemList.new(Title::MAIN_MENU)
   end
   
   # factory method for sub menu
   def self.subMenu()
-    itemList = ItemList.new(Title::SUB_MENU)
-    itemList
+    return ItemList.new(Title::SUB_MENU)
   end
 end
 
@@ -59,7 +58,7 @@ class ItemList
 
   def print(printService)
     if @itemList.empty? then
-      return
+      raise MenuNotFoundException.new("メニューが存在しません") 
     end
 
     printService.printIndentLevel1  @title
