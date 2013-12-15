@@ -8,12 +8,6 @@ require 'kconv'
 describe SaganoPageAnalyzeService do
   before(:each) do
     @document = Nokogiri::HTML.parse(open("spec/stub/sagano.html").read.toutf8, nil, 'UTF-8')
-    @expectedSetsOfMainMenu = [ ::Item.new("アジフライ"), ::Item.new("具沢山金平ごぼう") ]
-    @expectedSetsOfSubMenu = [::Item.new("イカの味醂醤油焼き"), \
-                              ::Item.new("肉焼売"),
-                              ::Item.new("ラーパーツァイ（白菜の辛味甘酢漬け）"),\
-                              ::Item.new("スパゲティサラダ"),\
-                              ::Item.new("しば漬け")]
   end
 
   after(:each) do
@@ -21,36 +15,69 @@ describe SaganoPageAnalyzeService do
   end
 
   describe "when success to analyze document" do
-    it "returns Array of Item" do
-      service = SaganoPageAnalyzeService.new(@document)
-      mainMenu = service.getMainMenu()
-      mainMenu.should be_an_instance_of ::Array
-      mainMenu.each do |menu, indx|
-        menu.should be_an_instance_of ::Item
-      end
+    before(:each) do
+      # collect parameter for testing
+      @expected = ::PrintValueCollector.new()
+      @actual   = ::PrintValueCollector.new() 
+      expectedMainMenuList = ::ItemList.new()
+      expectedMainMenuList.add(::Item.new("アジフライ")).add(::Item.new("具沢山金平ごぼう"))
+      @expectedMainMenu = ::Category.mainMenu(expectedMainMenuList)
 
-      mainMenu.each_with_index do |menu, index|
-        menu.should == @expectedSetsOfMainMenu[index]
-      end
+      expectedSubMenuList = ::ItemList.new()
+      expectedSubMenuList.add(::Item.new("イカの味醂醤油焼き")).add(::Item.new("肉焼売"))\
+                         .add(::Item.new("ラーパーツァイ（白菜の辛味甘酢漬け）"))\
+                         .add(::Item.new("スパゲティサラダ")).add(::Item.new("しば漬け"))
+      @expectedSubMenu = ::Category.subMenu(expectedSubMenuList)
+      @service = SaganoPageAnalyzeService.new(@document)
+    end
 
-      subMenu = service.getSubMenu()
-      subMenu.should be_an_instance_of ::Array
+    after(:each) do
+      @expected = nil
+      @actual = nil
+      @expectedMainMenu = nil
+      @expectedSubMenu = nil
+    end
+
+    it "returns Category object of mainMenu" do
+      actualMainMenu = @service.getMainMenu()
+      actualMainMenu.should be_an_instance_of ::Category
+      
+      @expectedMainMenu.print @expected #collect string to print
+      actualMainMenu.print @actual      #collect string to print 
+      @actual.hasSameString(@expected).should be_true
+    end
+
+    it "returns Category object of subMenu" do
+      actualSubMenu = @service.getSubMenu()
+      actualSubMenu.should be_an_instance_of ::Category
+      
+      @expectedSubMenu.print @expected #collect string to print
+      actualSubMenu.print @actual      #collect string to print 
+      @actual.hasSameString(@expected).should be_true
     end
   end
 
-  describe "when fail to analyze document, as a result of analyze, user can't find main menu" do
-    it "should raise error when document is null" do
+  describe "when fail to analyze document, as a result of analyze" do
+    it "should raise error when document is nil" do
       service = SaganoPageAnalyzeService.new(nil)
       expect {
        service.getMainMenu 
       }.to raise_error(MenuNotFoundException)
+
+      expect {
+       service.getSubMenu 
+      }.to raise_error(MenuNotFoundException)
     end
 
     it "should raise error when parent element of menu is not found" do
-      @document.css("div.inner").remove()
+      @document.css("div.inner").remove
       service = SaganoPageAnalyzeService.new(@document)
       expect {
         service.getMainMenu
+      }.to raise_error(MenuNotFoundException)
+
+      expect {
+        service.getSubMenu
       }.to raise_error(MenuNotFoundException)
     end
 
@@ -59,6 +86,14 @@ describe SaganoPageAnalyzeService do
       service = SaganoPageAnalyzeService.new(@document)
       expect {
         service.getMainMenu
+      }.to raise_error(MenuNotFoundException)
+    end
+
+    it "should raise error when sub menu element is not found" do
+      @document.css("div.inner").css("li").remove
+      service = SaganoPageAnalyzeService.new(@document)
+      expect {
+        service.getSubMenu
       }.to raise_error(MenuNotFoundException)
     end
   end

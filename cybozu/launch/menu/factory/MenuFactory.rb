@@ -3,40 +3,29 @@ class MenuFactory
 
   def sagano(saganoPageAnalyzeService)
     menu = ::Menu.sagano()
-    mainMenus = saganoPageAnalyzeService.getMainMenu
-    mainMenuList = appendToItemList(mainMenus)
+    mainMenu = saganoPageAnalyzeService.getMainMenu
     begin
-      subMenus = saganoPageAnalyzeService.getSubMenu
-      subMenuList = appendToItemList(subMenus)
+      subMenu = saganoPageAnalyzeService.getSubMenu
     rescue MenuNotFoundException
-      subMenuList = ::NotPrintable.new()
+      subMenu = ::NotPrintable.new()
     end
-    menu.add(::Category.mainMenu(mainMenuList)).add(::Category.subMenu(subMenuList))
+    menu.add(mainMenu).add(subMenu)
   end
 
   def tamagoya(tamagoyaPageAnalyzeService)
     menu = ::Menu.tamagoya()
-    mainMenus = tamagoyaPageAnalyzeService.getMainMenu
-    mainMenuList = appendToItemList(mainMenus)
+    mainMenu = tamagoyaPageAnalyzeService.getMainMenu
     begin
-      subMenus = tamagoyaPageAnalyzeService.getSubMenu
-      subMenuList = appendToItemList(subMenus)
+      subMenu = tamagoyaPageAnalyzeService.getSubMenu
     rescue MenuNotFoundException
-      subMenuList = ::NotPrintable.new()
+      subMenu = ::NotPrintable.new()
     end
 
     begin
       nutorition = tamagoyaPageAnalyzeService.getNutorition
-      nutoritionList = appendToItemList(nutorition)
     rescue MenuNotFoundException
-      nutoritionList = ::NotPrintable.new()
+      nutorition = ::NotPrintable.new()
     end
-    menu.add(::Category.mainMenu(mainMenuList))\
-        .add(::Category.subMenu(subMenuList))\
-        .add(::Category.nutorition(nutoritionList))
-  end
-  private 
-  def appendToItemList(menus)
-      menus.reduce(::ItemList.new()) { |itemList, item| itemList.add(item) }
+    menu.add(mainMenu).add(subMenu).add(nutorition)
   end
 end
