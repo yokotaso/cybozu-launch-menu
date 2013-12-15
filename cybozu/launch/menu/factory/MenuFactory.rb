@@ -1,24 +1,42 @@
-require 'cybozu/launch/menu/interface/SaganoMenu.rb'
 require 'cybozu/launch/menu/composits/MenuComposits.rb'
-class SaganoMenuFactory
+class MenuFactory
 
-  def initialize(pageAnalyzeService)
-    @pageAnalyzeService = pageAnalyzeService
-  end
-  
-  def makeMainMenu()
-    mainMenu = ::MenuItemFactory.mainMenu() 
-    @pageAnalyzeService.getMainMenu().each { |menu| mainMenu.add(menu) }
-    return mainMenu 
-  end
-
-  def makeSubMenu()
+  def sagano(saganoPageAnalyzeService)
+    menu = ::Menu.sagano()
+    mainMenus = saganoPageAnalyzeService.getMainMenu
+    mainMenuList = appendToItemList(mainMenus)
     begin
-      subMenu = ::MenuItemFactory.subMenu()
-      @pageAnalyzeService.getSubMenu().each{ |menu| subMenu.add(menu) }
-      return subMenu
-    rescue MenuNotFoundException 
-      return ::NotPrintable.new()
+      subMenus = saganoPageAnalyzeService.getSubMenu
+      subMenuList = appendToItemList(subMenus)
+    rescue MenuNotFoundException
+      subMenuList = ::NotPrintable.new()
     end
+    menu.add(::Category.mainMenu(mainMenuList)).add(::Category.subMenu(subMenuList))
+  end
+
+  def tamagoya(tamagoyaPageAnalyzeService)
+    menu = ::Menu.tamagoya()
+    mainMenus = tamagoyaPageAnalyzeService.getMainMenu
+    mainMenuList = appendToItemList(mainMenus)
+    begin
+      subMenus = tamagoyaPageAnalyzeService.getSubMenu
+      subMenuList = appendToItemList(subMenus)
+    rescue MenuNotFoundException
+      subMenuList = ::NotPrintable.new()
+    end
+
+    begin
+      nutorition = tamagoyaPageAnalyzeService.getNutorition
+      nutoritionList = appendToItemList(nutorition)
+    rescue MenuNotFoundException
+      nutoritionList = ::NotPrintable.new()
+    end
+    menu.add(::Category.mainMenu(mainMenuList))\
+        .add(::Category.subMenu(subMenuList))\
+        .add(::Category.nutorition(nutoritionList))
+  end
+  private 
+  def appendToItemList(menus)
+      menus.reduce(::ItemList.new()) { |itemList, item| itemList.add(item) }
   end
 end
