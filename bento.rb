@@ -13,6 +13,11 @@ printer = PrintService.new()
 saganoClient = Client.sagano()
 tamagoClient = Client.tamagoya()
 menuFactory = MenuFactory.new()
+day = Time.now
+printer.printTopLevel "Content-type: text/plain;"
+printer.printTopLevel "charset=utf-8"
+printer.printEndOfLine
+printer.printTopLevel day.strftime("[ %Y/ %m/ %d ]") 
 # Sagano
 begin
   saganoDocument = saganoClient.getDocument
