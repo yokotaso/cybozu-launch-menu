@@ -2,7 +2,7 @@ require 'cybozu/launch/menu/composits/MenuComposits.rb'
 require 'cybozu/launch/menu/exception/MenuNotFoundException.rb'
 
 class TamagoyaPageAnalyzeService
-  FAILED_PARSE_HTML = "嵯峨野のHTMLの解析に失敗しています(%message%)"
+  FAILED_PARSE_HTML = "HTMLの解析に失敗しています(%message%)"
   def initialize(document, time)
     @document = document
     @today = time.day
