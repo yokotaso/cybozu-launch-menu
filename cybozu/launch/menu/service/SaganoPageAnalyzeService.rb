@@ -2,27 +2,27 @@ require 'cybozu/launch/menu/composits/MenuComposits.rb'
 require 'cybozu/launch/menu/exception/MenuNotFoundException.rb'
 class SaganoPageAnalyzeService
 
-  FAILED_PARSE_HTML = "HTMLの解析に失敗しています(%message%)"
+  FAILED_PARSE_HTML = "嵯峨野のHTMLの解析に失敗しています(%message%)"
   def initialize(document)
     @document = document
   end
 
   def getMainMenu()
-    return getListOfMenu('p')
+    return ::Category.mainMenu(getListOfMenu('p'))
   end
 
   def getSubMenu()
-    return getListOfMenu('li')
+    return ::Category.subMenu(getListOfMenu('li'))
   end
   
   private
   def getListOfMenu(message)
-    menuDocument = validate(message)
+    menuDocument = parse(message)
     return menuDocument.select { |menu| ! (menu.text.strip.empty?) }\
-                       .map    { |menu| ::Item.new(menu.text.strip) }
+                       .inject(::ItemList.new()) { |itemList, menu| itemList.add(::Item.new(menu.text.strip)) }
   end
   private
-  def validate(elementName)
+  def parse(elementName)
     if @document == nil then
       raiseError("@document == null")
     end
@@ -45,25 +45,4 @@ class SaganoPageAnalyzeService
   end
 end
 
-class TamagoyaPageAnalyzeService
-  def initizlie(document)
-    @document = document
-  end
 
-  def getMainmenu()
-
-  end
-
-  def getSubMenu()
-
-  end
-
-  def getNutorition()
-
-  end
-
-  def getMemo()
-
-  end
-
-end

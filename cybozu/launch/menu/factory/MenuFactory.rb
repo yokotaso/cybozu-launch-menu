@@ -1,24 +1,31 @@
-require 'cybozu/launch/menu/interface/SaganoMenu.rb'
 require 'cybozu/launch/menu/composits/MenuComposits.rb'
-class SaganoMenuFactory
+class MenuFactory
 
-  def initialize(pageAnalyzeService)
-    @pageAnalyzeService = pageAnalyzeService
-  end
-  
-  def makeMainMenu()
-    mainMenu = ::MenuItemFactory.mainMenu() 
-    @pageAnalyzeService.getMainMenu().each { |menu| mainMenu.add(menu) }
-    return mainMenu 
-  end
-
-  def makeSubMenu()
+  def sagano(saganoPageAnalyzeService)
+    menu = ::Menu.sagano()
+    mainMenu = saganoPageAnalyzeService.getMainMenu
     begin
-      subMenu = ::MenuItemFactory.subMenu()
-      @pageAnalyzeService.getSubMenu().each{ |menu| subMenu.add(menu) }
-      return subMenu
-    rescue MenuNotFoundException 
-      return ::NotPrintable.new()
+      subMenu = saganoPageAnalyzeService.getSubMenu
+    rescue MenuNotFoundException
+      subMenu = ::NotPrintable.new()
     end
+    menu.add(mainMenu).add(subMenu)
+  end
+
+  def tamagoya(tamagoyaPageAnalyzeService)
+    menu = ::Menu.tamagoya()
+    mainMenu = tamagoyaPageAnalyzeService.getMainMenu
+    begin
+      subMenu = tamagoyaPageAnalyzeService.getSubMenu
+    rescue MenuNotFoundException
+      subMenu = ::NotPrintable.new()
+    end
+
+    begin
+      nutorition = tamagoyaPageAnalyzeService.getNutorition
+    rescue MenuNotFoundException
+      nutorition = ::NotPrintable.new()
+    end
+    menu.add(mainMenu).add(subMenu).add(nutorition)
   end
 end

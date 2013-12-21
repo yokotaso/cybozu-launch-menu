@@ -21,3 +21,30 @@ class PrintService
     print "\n"
   end
 end
+
+class PrintValueCollector
+  attr_reader :value
+  def initialize()
+    @value = ""
+  end
+
+  def printTopLevel(string)
+    @value.concat("#{string}\n")
+  end
+  
+  def printIndentLevel1(string)
+    @value.concat(" #{string}\n")
+  end
+
+  def printIndentLevel2(string)
+    @value.concat("  #{string}\n") 
+  end
+
+  def printEndOfLine()
+    @value.concat("\n") 
+  end
+
+  def hasSameString(printValueCollector)
+    @value == printValueCollector.value
+  end
+end
