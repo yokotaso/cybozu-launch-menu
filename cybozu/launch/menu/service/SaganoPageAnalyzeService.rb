@@ -2,7 +2,7 @@ require 'cybozu/launch/menu/composits/MenuComposits.rb'
 require 'cybozu/launch/menu/exception/MenuNotFoundException.rb'
 class SaganoPageAnalyzeService
 
-  FAILED_PARSE_HTML = "嵯峨野のHTMLの解析に失敗しています(%message%)"
+  FAILED_PARSE_HTML = "HTMLの解析に失敗しています(%message%)"
   def initialize(document)
     @document = document
   end
