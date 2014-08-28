@@ -17,7 +17,7 @@ ruby menu.rb
 * mocha(0.14.0)
 
 # Special thanks
-* [たまごや](http://www.tamagoya.co.jp/)
+* [たまごや](http://tamagoya.co.jp/)
 * [嵯峨野](http://www.bento-sagano.jp/)
 * [ruby](https://www.ruby-lang.org/ja/)
 * [Nokogiri](http://nokogiri.org/)
